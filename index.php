@@ -1,46 +1,123 @@
 <?php
-include 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $curso = $_POST['curso'];
+require_once "conexao.php";
 
-    $sql = "INSERT INTO alunos (nome, email, curso) VALUES ('$nome', '$email', '$curso')";
-    if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
-        exit;
-    } else {
-        echo "Erro: " . $conn->error;
-    }
+$sql = "SELECT
+p.id,
+p.nome,
+p.preco,
+p.id_categoria,
+p.quantidade
+FROM tbl_produtos p";
+
+$resultado = mysqli_query($conexao, $sql);
+
+if (!$resultado) {
+    die("Erro na consulta: " . mysqli_error($conexao));
 }
+
 ?>
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Novo Aluno</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ETEC - Consulta de Produtos</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+    </style>
+
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-  <h2>Novo Aluno</h2>
-  <form method="post">
-    <div class="mb-3">
-      <label class="form-label">Nome</label>
-      <input type="text" name="nome" class="form-control" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">E-mail</label>
-      <input type="email" name="email" class="form-control" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Curso</label>
-      <input type="text" name="curso" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a href="index.php" class="btn btn-secondary">Voltar</a>
-  </form>
-</div>
+
+<body>
+
+    <h1>Lista de Produtos Cadastrados</h1>
+
+    <p>
+        Esta página executa o comando <strong>SELECT</strong>
+        no MySQL e exibe os produtos cadastrados.
+    </p>
+
+    <p>1- Informática</p>
+    <p>2- Eletrônicos</p>
+    <p>3- Games</p>
+    <p>4- Eletrodomésticos</p>
+    <p>5- Escritório</p>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Código (ID)</th>
+                <th>Nome do Produto</th>
+                <th>Categoria</th>
+                <th>Preço (R$)</th>
+                <th>Estoque (Qtd)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <?php while ($linha = mysqli_fetch_assoc($resultado)): ?>
+
+                <tr>
+                    <td><?= htmlspecialchars($linha['id']) ?></td>
+                    <td><?= htmlspecialchars($linha['nome']) ?></td>
+                    <td><?= htmlspecialchars($linha['id_categoria']) ?></td>
+                    <td>R$ <?= number_format($linha['preco'], 2, ',', '.') ?></td>
+                    <td><?= htmlspecialchars($linha['quantidade']) ?></td>
+                </tr>
+
+            <?php endwhile; ?>
+
+        </tbody>
+
+    </table>
+
 </body>
+
 </html>
+
+<?php
+
+mysqli_close($conexao);
+
+?>
