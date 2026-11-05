@@ -1,14 +1,19 @@
+PHP
+
 <?php
 
 require_once "conexao.php";
 
 $sql = "SELECT
-p.id,
-p.nome,
-p.preco,
-p.id_categoria,
-p.quantidade
-FROM tbl_produtos p";
+    p.id,
+    p.nome,
+    p.preco,
+    c.nome AS categoria,
+    p.quantidade
+FROM tbl_produtos p
+INNER JOIN tbl_categorias c
+    ON p.id_categoria = c.id
+ORDER BY p.id";
 
 $resultado = mysqli_query($conexao, $sql);
 
@@ -76,12 +81,6 @@ if (!$resultado) {
         no MySQL e exibe os produtos cadastrados.
     </p>
 
-    <p>1- Informática</p>
-    <p>2- Eletrônicos</p>
-    <p>3- Games</p>
-    <p>4- Eletrodomésticos</p>
-    <p>5- Escritório</p>
-
     <table>
 
         <thead>
@@ -101,7 +100,7 @@ if (!$resultado) {
                 <tr>
                     <td><?= htmlspecialchars($linha['id']) ?></td>
                     <td><?= htmlspecialchars($linha['nome']) ?></td>
-                    <td><?= htmlspecialchars($linha['id_categoria']) ?></td>
+                    <td><?= htmlspecialchars($linha['categoria']) ?></td>
                     <td>R$ <?= number_format($linha['preco'], 2, ',', '.') ?></td>
                     <td><?= htmlspecialchars($linha['quantidade']) ?></td>
                 </tr>
